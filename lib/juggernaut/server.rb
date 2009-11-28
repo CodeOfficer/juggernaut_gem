@@ -247,6 +247,9 @@ module Juggernaut
               client = Juggernaut::Client.find_by_id(client_id)
               client.remove_channels!(@request[:channels]) if client
             end
+          when :show_clients_for_channel_and_post
+            query_needs :channels
+            clients_query_request Juggernaut::Client.find_by_channels(@request[:channels]).collect{ |client| client.id }
           when :show_channels_for_client
             query_needs :client_id
             if client = Juggernaut::Client.find_by_id(@request[:client_id])
@@ -349,6 +352,23 @@ module Juggernaut
         params << "session_id=#{URI.escape(@request[:session_id])}" if @request[:session_id]
         params << "type=#{@request[:type]}"
         params << "command=#{@request[:command]}"
+        (@request[:channels] || []).each {|chan| params << "channels[]=#{chan}" }
+        url.query = params.join('&')
+        begin
+          open(url.to_s, "User-Agent" => "Ruby/#{RUBY_VERSION}")
+        rescue Timeout::Error
+          return false
+        rescue
+          return false
+        end
+        true
+      end
+      
+      def clients_query_request(clients)
+        return false unless options[:clients_request_url]
+        url = URI.parse(options[:clients_request_url])
+        params = []
+        clients.each{|client| params << "clients[]=#{client}" }
         (@request[:channels] || []).each {|chan| params << "channels[]=#{chan}" }
         url.query = params.join('&')
         begin

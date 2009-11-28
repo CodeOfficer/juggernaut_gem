@@ -92,6 +92,11 @@ module Juggernaut
      # may only temporarily be disconnected, and may attempt a reconnect very soon.
      # 
      # :timeout: 10
+     
+     # callback url to update for displaying the current users in a chat room.
+     # http://github.com/taelor/chat_sandbox/raw/ff1d6ab9d0dd447c18aed6ba35ce56f673f9c6bf/juggey-2.txt
+     # 
+     # :clients_request_url: http://localhost:3000/sessions/juggernaut_users
 
      # store_messages defaults to false. If this option is true, messages send to connections will be stored. 
      # This is useful since a client can then receive broadcasted message that it has missed (perhaps it was disconnected).
